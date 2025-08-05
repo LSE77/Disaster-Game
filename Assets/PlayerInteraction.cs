@@ -12,10 +12,12 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject pipeUp6_1;
     public GameObject pipeStraightShort7_1;
 
+    private bool panelOpenedOnce = false; // 한 번만 열리게 하는 플래그
+
     void Update()
     {
-        // 클릭으로 패널 열기
-        if (Input.GetMouseButtonDown(0) && (repairPanel == null || !repairPanel.activeSelf))
+        // 클릭으로 패널 열기 (단, 아직 한 번도 안 열었으면만)
+        if (Input.GetMouseButtonDown(0) && !panelOpenedOnce && (repairPanel == null || !repairPanel.activeSelf))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -28,8 +30,8 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
-        // ESC로 패널 닫기
-        if (repairPanel != null && repairPanel.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+        // R로 패널 닫기
+        if (repairPanel != null && repairPanel.activeSelf && Input.GetKeyDown(KeyCode.R))
         {
             CloseRepairPanel();
         }
@@ -37,27 +39,17 @@ public class PlayerInteraction : MonoBehaviour
         // 패널이 열려 있으면 커서 보이게, 움직임 비활성화
         if (repairPanel != null && repairPanel.activeSelf)
         {
-            SetCursorAndControl(true);
-        }
-        else
-        {
             SetCursorAndControl(false);
         }
     }
 
     public void ShowRepairPanel()
     {
-        if (repairPanel != null)
+        if (repairPanel != null && !panelOpenedOnce)
         {
             repairPanel.SetActive(true);
         }
     }
-
-public void DebugClick()
-{
-    Debug.Log("OK 버튼 눌림!");
-}
-
 
     public void CloseRepairPanel()
     {
@@ -75,7 +67,9 @@ public void DebugClick()
         if (pipeStraightShort7_1 != null)
             pipeStraightShort7_1.SetActive(true);
 
-        // 패널이 닫힐 때도 커서/조작상태 즉시 갱신
+        // 한 번 닫힌 뒤 다시 열리지 않게 설정
+        panelOpenedOnce = true;
+
         SetCursorAndControl(false);
     }
 
