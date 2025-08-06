@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Disaster-Game.sln"
+    "dotnet.defaultSolution": "새 폴더.sln"
 }
