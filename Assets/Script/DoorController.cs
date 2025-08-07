@@ -3,28 +3,33 @@ using TMPro;
 
 public class DoorController : MonoBehaviour
 {
-    public TextMeshProUGUI doorMessage;  // "E를 눌러 열쇠를 사용하세요"
+    public TextMeshProUGUI doorMessage;  // 문 근처에서 뜨는 문구
     public GameObject closedDoor;        // 닫힌 문 오브젝트
-    public GameObject openedDoor;        // 열린 문 오브젝트 (초기 비활성화)
-    public KeyPickup keyPickup;          // 열쇠 스크립트 참조
+    public GameObject openedDoor;        // 열린 문 오브젝트
+    public float interactDistance = 5f;  // 문 상호작용 거리
 
     private bool isPlayerNearby = false;
     private bool doorOpened = false;
 
     void Start()
     {
-        doorMessage.gameObject.SetActive(false);
+        if (doorMessage != null)
+            doorMessage.gameObject.SetActive(false);
+
         if (openedDoor != null)
-            openedDoor.SetActive(false); // 시작 시 열린 문은 비활성화
+            openedDoor.SetActive(false);  // 시작할 땐 열린 문 비활성화
     }
 
     void Update()
     {
-        if (isPlayerNearby && !doorOpened && keyPickup == null) // 열쇠를 가진 상태
+        if (isPlayerNearby && !doorOpened)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (KeyPickup.hasKey)  // 열쇠가 있을 때
             {
-                OpenDoor();
+                if (Input.GetKeyDown(KeyCode.R))  // R 키로 문 열기
+                {
+                    OpenDoor();
+                }
             }
         }
     }
@@ -34,8 +39,16 @@ public class DoorController : MonoBehaviour
         if (other.CompareTag("Player") && !doorOpened)
         {
             isPlayerNearby = true;
-            if (keyPickup == null) // 열쇠를 가지고 있을 때만 메시지 표시
+
+            if (doorMessage != null)
+            {
+                if (KeyPickup.hasKey)
+                    doorMessage.text = "Press the R key to open the door.";
+                else
+                    doorMessage.text = "You need a key to open the door. The area near the car is suspicious.";
+
                 doorMessage.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -44,18 +57,22 @@ public class DoorController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerNearby = false;
-            doorMessage.gameObject.SetActive(false);
+            if (doorMessage != null)
+                doorMessage.gameObject.SetActive(false);
         }
     }
 
     void OpenDoor()
     {
         doorOpened = true;
-        doorMessage.gameObject.SetActive(false);
 
-        // 닫힌 문 비활성화 & 열린 문 활성화
-        closedDoor.SetActive(false);
-        openedDoor.SetActive(true);
+        if (doorMessage != null)
+            doorMessage.gameObject.SetActive(false);
+
+        if (closedDoor != null)
+            closedDoor.SetActive(false);
+        if (openedDoor != null)
+            openedDoor.SetActive(true);
 
         Debug.Log("문이 열렸습니다!");
     }

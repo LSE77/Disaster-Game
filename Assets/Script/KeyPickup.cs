@@ -3,16 +3,37 @@ using UnityEngine.UI;
 
 public class KeyPickup : MonoBehaviour
 {
-    public Image keyIconUI; // UI 열쇠 아이콘
+    public Image keyIconUI;
+    public float pickupDistance = 10f;
+
+    public static bool hasKey = false;  //  여기가 중요!
+
     private bool isCollected = false;
 
-    void OnTriggerEnter(Collider other)
+    void Update()
     {
-        if (other.CompareTag("Player") && !isCollected)
+        if (!isCollected && Input.GetMouseButtonDown(0))
         {
-            isCollected = true;
-            keyIconUI.gameObject.SetActive(true); // 열쇠 UI 표시
-            Destroy(gameObject); // 열쇠 오브젝트 제거
+            Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, pickupDistance))
+            {
+                if (hit.collider.gameObject == this.gameObject)
+                {
+                    CollectKey();
+                }
+            }
         }
+    }
+
+    void CollectKey()
+    {
+        isCollected = true;
+        hasKey = true;  //  키를 얻었다고 표시
+        if (keyIconUI != null)
+            keyIconUI.gameObject.SetActive(true);
+
+        Destroy(gameObject);
     }
 }
