@@ -22,7 +22,7 @@ public class DarkZoneTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            targetAlpha = 0.6f;  // 어두워지는 정도
+            targetAlpha = 1f;  // 어두워지는 정도
         }
     }
 

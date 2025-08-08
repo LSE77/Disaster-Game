@@ -4930,6 +4930,7 @@ GameObject:
   m_Component:
   - component: {fileID: 143240685}
   - component: {fileID: 143240688}
+  - component: {fileID: 143240689}
   - component: {fileID: 143240687}
   - component: {fileID: 143240686}
   m_Layer: 5
@@ -4947,7 +4948,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 143240684}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -54.9}
+  m_LocalPosition: {x: 0, y: 0, z: -78.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4955,7 +4956,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -550.22, y: -219.29}
+  m_AnchoredPosition: {x: -614.91, y: -182.94}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!65 &143240686
@@ -5029,6 +5030,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 143240684}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &143240689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143240684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67561fe6ba95ab94887ded0885d47833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  darkOverlay: {fileID: 434478717}
+  fadeSpeed: 2
 --- !u!1 &146256157
 GameObject:
   m_ObjectHideFlags: 0
@@ -10410,7 +10425,7 @@ Transform:
   m_GameObject: {fileID: 322664807}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.47999, y: -12.63, z: 199.1}
+  m_LocalPosition: {x: -0.47999, y: -16.23, z: -88}
   m_LocalScale: {x: 748.74304, y: 0, z: 258.09464}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14702,7 +14717,7 @@ GameObject:
   - component: {fileID: 434478718}
   - component: {fileID: 434478717}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: DarkZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23375,7 +23390,7 @@ Transform:
   m_GameObject: {fileID: 661264172}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.23, y: -11.72, z: -73.4}
+  m_LocalPosition: {x: -22.75, y: -11.9, z: -71.9}
   m_LocalScale: {x: 3.459574, y: 4.1373363, z: 3.4117475}
   m_ConstrainProportionsScale: 0
   m_Children:
