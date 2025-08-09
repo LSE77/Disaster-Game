@@ -2321,6 +2321,9 @@ MonoBehaviour:
   - {fileID: 417486463}
   hammerIconUI: {fileID: 2091293654}
   hammerCountText: {fileID: 1290198371}
+  hammerPickupClip: {fileID: 8300000, guid: be83d7a98e517114daebc0b245f821ae, type: 3}
+  volume: 1
+  playAs2D: 1
 --- !u!114 &64955066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14025,6 +14028,9 @@ MonoBehaviour:
   - {fileID: 417486463}
   hammerIconUI: {fileID: 2091293654}
   hammerCountText: {fileID: 1290198371}
+  hammerPickupClip: {fileID: 8300000, guid: be83d7a98e517114daebc0b245f821ae, type: 3}
+  volume: 1
+  playAs2D: 1
 --- !u!114 &417486470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23442,6 +23448,7 @@ GameObject:
   - component: {fileID: 661264176}
   - component: {fileID: 661264175}
   - component: {fileID: 661264174}
+  - component: {fileID: 661264186}
   - component: {fileID: 661264173}
   - component: {fileID: 661264178}
   - component: {fileID: 661264177}
@@ -23450,6 +23457,8 @@ GameObject:
   - component: {fileID: 661264181}
   - component: {fileID: 661264182}
   - component: {fileID: 661264183}
+  - component: {fileID: 661264185}
+  - component: {fileID: 661264184}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -23539,7 +23548,7 @@ Transform:
   m_GameObject: {fileID: 661264172}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -22.75, y: -11.9, z: -71.9}
+  m_LocalPosition: {x: 20.36, y: -12.05, z: -71.9}
   m_LocalScale: {x: 3.459574, y: 4.1373363, z: 3.4117475}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23669,6 +23678,131 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlightDistance: 3
+--- !u!82 &661264184
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661264172}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 2
+  MaxDistance: 35
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &661264185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661264172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afc82480e4cff5042b9af57e9094c486, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepClip: {fileID: 8300000, guid: cee9d6782c8758c4488354dc77d5875e, type: 3}
+  stepDistance: 1
+  playDuration: 0.5
+  minInterval: 0.2
+  ignoreDeltaBelow: 0.001
+--- !u!114 &661264186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661264172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 775b35b9d95e5a8429bc13828127b6f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &666303749
 GameObject:
   m_ObjectHideFlags: 0
@@ -34930,7 +35064,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalObject: {fileID: 1393300962}
   collapsedObject: {fileID: 1611920062}
+  effectDuration: 3
   cameraShake: {fileID: 963194231}
+  shakeMagnitude: 0.4
+  collapseClip: {fileID: 8300000, guid: 575ce752793b65245ba46aae048a4061, type: 3}
+  volume: 1
+  playAs2D: 1
 --- !u!65 &1012673673
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -46016,7 +46155,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalObject: {fileID: 1393300962}
   collapsedObject: {fileID: 1611920062}
+  effectDuration: 3
   cameraShake: {fileID: 963194231}
+  shakeMagnitude: 0.4
+  collapseClip: {fileID: 8300000, guid: 575ce752793b65245ba46aae048a4061, type: 3}
+  volume: 1
+  playAs2D: 1
 --- !u!1 &1396625314
 GameObject:
   m_ObjectHideFlags: 0
@@ -52796,7 +52940,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalObject: {fileID: 1393300962}
   collapsedObject: {fileID: 1611920062}
+  effectDuration: 3
   cameraShake: {fileID: 963194231}
+  shakeMagnitude: 0.4
+  collapseClip: {fileID: 0}
+  volume: 1
+  playAs2D: 1
 --- !u!114 &1611920068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56400,6 +56549,9 @@ MonoBehaviour:
   - {fileID: 417486463}
   hammerIconUI: {fileID: 2091293654}
   hammerCountText: {fileID: 1290198371}
+  hammerPickupClip: {fileID: 8300000, guid: be83d7a98e517114daebc0b245f821ae, type: 3}
+  volume: 1
+  playAs2D: 1
 --- !u!114 &1719505019
 MonoBehaviour:
   m_ObjectHideFlags: 0
