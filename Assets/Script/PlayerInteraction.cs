@@ -56,27 +56,32 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    // 수리 패널 열기
-    public void ShowRepairPanel()
+// 수리 패널 열기
+public void ShowRepairPanel()
+{
+    if (!panelOpenedOnce)
     {
-        if (!panelOpenedOnce)
+        if (puthammer.hammerCount >= 3) // ✅ 3 -> 2
         {
-            if (puthammer.hammerCount >= 3)
-            {
-                if (repairPanel != null)
-                    repairPanel.SetActive(true);
-                if (notPanel != null)
-                    notPanel.SetActive(false);
-            }
-            else
-            {
-                if (notPanel != null)
-                    notPanel.SetActive(true);
-                if (repairPanel != null)
-                    repairPanel.SetActive(false);
-            }
+            if (repairPanel != null)
+                repairPanel.SetActive(true);
+            if (notPanel != null)
+                notPanel.SetActive(false);
+
+            SetCursorAndControl(true); // ✅ 패널 열면 조작 잠금
+        }
+        else
+        {
+            if (notPanel != null)
+                notPanel.SetActive(true);
+            if (repairPanel != null)
+                repairPanel.SetActive(false);
+
+            SetCursorAndControl(true); // 부족 패널도 열면 잠금
         }
     }
+}
+
 
     // 수리 후 닫기 + 망치 0으로 초기화
     public void CloseRepairPanel()
