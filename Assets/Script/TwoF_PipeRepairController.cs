@@ -233,24 +233,31 @@ public class SimplePipeRepair : MonoBehaviour
         ForceClosePanels();
     }
 
-    private void DoRepair()
-    {
-        // --- 사운드 2초 재생 (UI 닫기와 무관하게 먼저 트리거) ---
-        if (repairClip != null)
-            StartCoroutine(PlayRepairClip2s(transform.position));
+private void DoRepair()
+{
+    // --- 사운드 2초 재생 ---
+    if (repairClip != null)
+        StartCoroutine(PlayRepairClip2s(transform.position));
 
-        // 파이프/벽 전환
-        if (brokenPipe) brokenPipe.SetActive(false);
-        if (fixedPipe) fixedPipe.SetActive(true);
-        if (wallObject) wallObject.SetActive(false);
+    // 파이프/벽 전환
+    if (brokenPipe) brokenPipe.SetActive(false);
+    if (fixedPipe) fixedPipe.SetActive(true);
+    if (wallObject) wallObject.SetActive(false);
 
-        isRepaired = true;
+    isRepaired = true;
 
-        // UI/커서/컨트롤 확실히 닫기
-        ForceClosePanels();
+    // ✅ 망치 갯수 초기화
+    collectedCount = 0;
+    for (int i = 0; i < collected.Length; i++)
+        collected[i] = false;
 
-        Debug.Log($"[Pipe] Repaired! local={collectedCount}/{requiredCount}, global={TryGetGlobal()}");
-    }
+    try { puthammer.hammerCount = 0; } catch { /* puthammer 없으면 무시 */ }
+
+    // UI/커서/컨트롤 닫기
+    ForceClosePanels();
+
+    Debug.Log($"[Pipe] Repaired! local reset to {collectedCount}, global reset to {TryGetGlobal()}");
+}
 
     // === N초만 재생 후 정리 (2초 고정) ===
     private System.Collections.IEnumerator PlayRepairClip2s(Vector3 worldPos)
@@ -312,13 +319,15 @@ public class PipeHammerPickup : MonoBehaviour
         return false;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!manager) return;
-        if (!IsPlayer(other)) return;
+private void OnTriggerEnter(Collider other)
+{
+    /*
+    if (!manager) return;
+    if (!IsPlayer(other)) return;
 
-        manager.ReportHammerCollected(index);
-        gameObject.SetActive(false);
-        Debug.Log($"[Pickup] {name} -> collected (idx={index}).");
-    }
+    manager.ReportHammerCollected(index);
+    gameObject.SetActive(false);
+    Debug.Log($"[Pickup] {name} -> collected (idx={index}).");
+    */
+}
 }
