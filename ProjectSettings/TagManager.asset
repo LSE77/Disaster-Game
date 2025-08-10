@@ -8,6 +8,7 @@ TagManager:
   - clear
   - Interactable
   - electric
+  - Flashlight
   layers:
   - Default
   - TransparentFX

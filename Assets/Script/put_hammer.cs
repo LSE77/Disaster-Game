@@ -69,6 +69,7 @@ public class puthammer : MonoBehaviour
             bool highlight = false;
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100f))
@@ -148,6 +149,19 @@ public class puthammer : MonoBehaviour
 
         if (src.isPlaying) src.Stop();
         Destroy(go);
+    }
+
+    // === 외부에서 호출할 UI 숨김 헬퍼(정적) ===
+    public static void HideHammerUI()
+    {
+        var instance = FindObjectOfType<puthammer>();
+        if (instance != null)
+        {
+            if (instance.hammerIconUI != null)
+                instance.hammerIconUI.gameObject.SetActive(false);
+            if (instance.hammerCountText != null)
+                instance.hammerCountText.gameObject.SetActive(false);
+        }
     }
 
     // 전역 코루틴 러너: 별도 게임오브젝트에 붙어서 항상 살아있음

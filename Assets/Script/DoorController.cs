@@ -1,79 +1,113 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class DoorController : MonoBehaviour
 {
-    public TextMeshProUGUI doorMessage;  // 문 근처에서 뜨는 문구
-    public GameObject closedDoor;        // 닫힌 문 오브젝트
-    public GameObject openedDoor;        // 열린 문 오브젝트
-    public float interactDistance = 5f;  // 문 상호작용 거리
+    public TextMeshProUGUI doorMessage;
+    public GameObject closedDoor;
+    public GameObject openedDoor;
 
-    private bool isPlayerNearby = false;
-    private bool doorOpened = false;
+    [Header("Key UI")]
+    public Image keyIconUI;                 // assign the key UI Image
+
+    [Header("Sounds")]
+    public AudioClip keyUseClip;            // plays when key UI disappears
+    public AudioClip doorOpenClip;          // plays when door opens
+    [Range(0f, 1f)] public float volume = 1f;
+    public float playSeconds = 2.5f;        // duration for door sound
+    public bool playAs2D = true;            // 2D recommended
+
+    private bool isPlayerNearby;
+    private bool doorOpened;
 
     void Start()
     {
-        if (doorMessage != null)
-            doorMessage.gameObject.SetActive(false);
-
-        if (openedDoor != null)
-            openedDoor.SetActive(false);  // 시작할 땐 열린 문 비활성화
+        if (doorMessage) doorMessage.gameObject.SetActive(false);
+        if (openedDoor) openedDoor.SetActive(false);
     }
 
     void Update()
     {
-        if (isPlayerNearby && !doorOpened)
+        if (isPlayerNearby && !doorOpened && KeyPickup.hasKey && Input.GetKeyDown(KeyCode.R))
         {
-            if (KeyPickup.hasKey)  // 열쇠가 있을 때
-            {
-                if (Input.GetKeyDown(KeyCode.R))  // R 키로 문 열기
-                {
-                    OpenDoor();
-                }
-            }
+            OpenDoor();
         }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !doorOpened)
+        if (!other.CompareTag("Player") || doorOpened) return;
+        isPlayerNearby = true;
+
+        if (doorMessage)
         {
-            isPlayerNearby = true;
-
-            if (doorMessage != null)
-            {
-                if (KeyPickup.hasKey)
-                    doorMessage.text = "Press the R key to open the door.";
-                else
-                    doorMessage.text = "You need a key to open the door. The area near the car is suspicious.";
-
-                doorMessage.gameObject.SetActive(true);
-            }
+            doorMessage.text = KeyPickup.hasKey
+                ? "Press the R key to open the door."
+                : "You need a key to open the door. The area near the car is suspicious.";
+            doorMessage.gameObject.SetActive(true);
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerNearby = false;
-            if (doorMessage != null)
-                doorMessage.gameObject.SetActive(false);
-        }
+        if (!other.CompareTag("Player")) return;
+        isPlayerNearby = false;
+        if (doorMessage) doorMessage.gameObject.SetActive(false);
     }
 
     void OpenDoor()
     {
         doorOpened = true;
 
-        if (doorMessage != null)
-            doorMessage.gameObject.SetActive(false);
+        if (doorMessage) doorMessage.gameObject.SetActive(false);
 
-        if (closedDoor != null)
-            closedDoor.SetActive(false);
-        if (openedDoor != null)
-            openedDoor.SetActive(true);
+        // 1) consume key: hide key UI and play key-use sound right at this moment
+        if (KeyPickup.hasKey)
+        {
+            if (keyIconUI) keyIconUI.gameObject.SetActive(false);
+            if (keyUseClip) StartCoroutine(PlayDetachedSFX(keyUseClip, 0.75f, transform.position)); // short blip
+            KeyPickup.hasKey = false;
+        }
 
-        Debug.Log("문이 열렸습니다!");
+        // 2) play door opening sound (detached so it won't stop)
+        if (doorOpenClip) StartCoroutine(PlayDetachedSFX(doorOpenClip, playSeconds, transform.position));
+
+        // 3) swap door visuals
+        if (closedDoor) closedDoor.SetActive(false);
+        if (openedDoor) openedDoor.SetActive(true);
+    }
+
+    IEnumerator PlayDetachedSFX(AudioClip clip, float seconds, Vector3 pos)
+    {
+        if (clip == null) yield break;
+
+        var go = new GameObject("DetachedSFX");
+        var src = go.AddComponent<AudioSource>();
+        src.clip = clip;
+        src.volume = volume;
+        src.loop = false;
+
+        if (playAs2D)
+        {
+            src.spatialBlend = 0f; // 2D
+        }
+        else
+        {
+            src.spatialBlend = 1f; // 3D positional
+            go.transform.position = pos;
+            src.minDistance = 2f;
+            src.maxDistance = 20f;
+        }
+
+        src.Play();
+
+        // unscaled so it still plays if timeScale == 0
+        float t = 0f;
+        while (t < seconds) { t += Time.unscaledDeltaTime; yield return null; }
+
+        if (src.isPlaying) src.Stop();
+        Destroy(go);
     }
 }

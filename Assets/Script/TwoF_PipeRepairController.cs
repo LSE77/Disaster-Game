@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class SimplePipeRepair : MonoBehaviour
 {
@@ -29,6 +31,11 @@ public class SimplePipeRepair : MonoBehaviour
     public bool alsoUseGlobalCounter = true;     // ✅ puthammer.hammerCount도 인정할지
     public int globalRequiredCountOverride = 0;  // 0이면 requiredCount와 동일
 
+    [Header("수리 사운드(2초)")]
+    public AudioClip repairClip;                 // ← hammer-6145.wav 지정
+    [Range(0f, 1f)] public float repairVolume = 1f;
+    public bool playRepairAs2D = true;
+
     // 내부 상태
     private bool[] collected; // 각 망치 수집 여부(이 스크립트 기준)
     private int collectedCount = 0;
@@ -39,10 +46,10 @@ public class SimplePipeRepair : MonoBehaviour
         if (!cam) cam = Camera.main;
 
         if (brokenPipe) brokenPipe.SetActive(true);
-        if (fixedPipe)  fixedPipe.SetActive(false);
+        if (fixedPipe) fixedPipe.SetActive(false);
         if (wallObject) wallObject.SetActive(true);
-        if (repairPanel) repairPanel.SetActive(false);
-        if (notPanel) notPanel.SetActive(false);
+        SafeSetActive(repairPanel, false);
+        SafeSetActive(notPanel, false);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -61,6 +68,11 @@ public class SimplePipeRepair : MonoBehaviour
         Debug.Log($"[Mgr] {name} ready. hammers={hammers.Length}, required={requiredCount}, useGlobal={alsoUseGlobalCounter}");
     }
 
+    private void SafeSetActive(GameObject go, bool state)
+    {
+        if (go && go.activeSelf != state) go.SetActive(state);
+    }
+
     // ⭐ 자식까지 모든 콜라이더에 설치
     private void SetupHammerDeep(GameObject root, int index)
     {
@@ -72,7 +84,6 @@ public class SimplePipeRepair : MonoBehaviour
             var c = root.AddComponent<SphereCollider>();
             c.isTrigger = true;
             AttachPickupAndRB(root, index);
-            Debug.Log($"[SetupHammer] {root.name} (no colliders) -> added SphereCollider & pickup idx={index}");
             return;
         }
 
@@ -80,7 +91,6 @@ public class SimplePipeRepair : MonoBehaviour
         {
             c.isTrigger = true;
             AttachPickupAndRB(c.gameObject, index);
-            Debug.Log($"[SetupHammer] Attached to {c.gameObject.name} (idx={index})");
         }
     }
 
@@ -104,7 +114,12 @@ public class SimplePipeRepair : MonoBehaviour
 
     void Update()
     {
-        if (isRepaired) return;
+        // 만약 외부에서 isRepaired가 켜졌다면, UI는 반드시 꺼져 있어야 함 (이중 안전장치)
+        if (isRepaired)
+        {
+            ForceClosePanels();
+            return;
+        }
 
         // 패널 꺼져 있을 때만 클릭 체크
         if (AllPanelsClosed())
@@ -114,7 +129,7 @@ public class SimplePipeRepair : MonoBehaviour
         }
         else
         {
-            // R 또는 ESC로 닫기/수리
+            // R/ESC로 닫기/수리
             if (repairPanel && repairPanel.activeSelf && Input.GetKeyDown(KeyCode.R))
                 DoRepair();
             else if (notPanel && notPanel.activeSelf && Input.GetKeyDown(KeyCode.R))
@@ -138,8 +153,7 @@ public class SimplePipeRepair : MonoBehaviour
         bool globalOK = false;
         if (alsoUseGlobalCounter)
         {
-            // puthammer가 프로젝트에 없는 경우를 대비한 try
-            try { globalOK = puthammer.hammerCount >= need; } catch { /* 무시 */ }
+            try { globalOK = puthammer.hammerCount >= need; } catch { /* puthammer 없을 수도 있음 */ }
         }
         return localOK || globalOK;
     }
@@ -166,7 +180,7 @@ public class SimplePipeRepair : MonoBehaviour
                 !HasTagOnSelfOrParents(hit.collider.transform, interactableTag))
                 return;
 
-            // brokenPipe 트리(부모/자식) 내인지 확인
+            // brokenPipe 트리 내 히트인지 확인
             if (brokenPipe)
             {
                 var t = hit.collider.transform;
@@ -175,14 +189,8 @@ public class SimplePipeRepair : MonoBehaviour
                 if (!hitBroken) return;
             }
 
-            Debug.Log($"[PipeClick] local={collectedCount}/{requiredCount} global={(alsoUseGlobalCounter ? TryGetGlobal() : -1)} hasEnough={HasEnoughHammers()}");
-
             if (HasEnoughHammers()) OpenRepairPanel();
             else OpenNotPanel();
-        }
-        else
-        {
-            Debug.Log("[PipeClick] Raycast missed.");
         }
     }
 
@@ -193,50 +201,82 @@ public class SimplePipeRepair : MonoBehaviour
 
     private void OpenRepairPanel()
     {
-        if (repairPanel) repairPanel.SetActive(true);
-        if (notPanel) notPanel.SetActive(false);
+        SafeSetActive(repairPanel, true);
+        SafeSetActive(notPanel, false);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         if (playerControllerScript) playerControllerScript.enabled = false;
-
-        Debug.Log("[UI] repairPanel ON");
     }
 
     private void OpenNotPanel()
     {
-        if (notPanel) notPanel.SetActive(true);
-        if (repairPanel) repairPanel.SetActive(false);
+        SafeSetActive(notPanel, true);
+        SafeSetActive(repairPanel, false);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         if (playerControllerScript) playerControllerScript.enabled = false;
+    }
 
-        Debug.Log("[UI] notPanel ON");
+    private void ForceClosePanels()
+    {
+        SafeSetActive(repairPanel, false);
+        SafeSetActive(notPanel, false);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        if (playerControllerScript) playerControllerScript.enabled = true;
     }
 
     private void ClosePanelsOnly()
     {
-        if (repairPanel) repairPanel.SetActive(false);
-        if (notPanel) notPanel.SetActive(false);
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        if (playerControllerScript) playerControllerScript.enabled = true;
-
-        Debug.Log("[UI] Panels OFF");
+        ForceClosePanels();
     }
 
     private void DoRepair()
     {
+        // --- 사운드 2초 재생 (UI 닫기와 무관하게 먼저 트리거) ---
+        if (repairClip != null)
+            StartCoroutine(PlayRepairClip2s(transform.position));
+
+        // 파이프/벽 전환
         if (brokenPipe) brokenPipe.SetActive(false);
-        if (fixedPipe)  fixedPipe.SetActive(true);
+        if (fixedPipe) fixedPipe.SetActive(true);
         if (wallObject) wallObject.SetActive(false);
 
         isRepaired = true;
-        ClosePanelsOnly();
 
-        Debug.Log("[Pipe] Repaired!");
+        // UI/커서/컨트롤 확실히 닫기
+        ForceClosePanels();
+
+        Debug.Log($"[Pipe] Repaired! local={collectedCount}/{requiredCount}, global={TryGetGlobal()}");
+    }
+
+    // === N초만 재생 후 정리 (2초 고정) ===
+    private System.Collections.IEnumerator PlayRepairClip2s(Vector3 worldPos)
+    {
+        GameObject go = new GameObject("RepairAudio");
+        var src = go.AddComponent<AudioSource>();
+        src.clip = repairClip;
+        src.volume = repairVolume;
+        src.loop = false;
+
+        if (playRepairAs2D)
+        {
+            src.spatialBlend = 0f; // 2D
+        }
+        else
+        {
+            src.spatialBlend = 1f; // 3D
+            src.minDistance = 3f;
+            src.maxDistance = 20f;
+            go.transform.position = worldPos;
+        }
+
+        src.Play();
+        yield return new WaitForSeconds(2.3f);
+        if (src.isPlaying) src.Stop();
+        Destroy(go);
     }
 
     // ---- 망치 픽업 콜백 (인덱스로 식별) ----

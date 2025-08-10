@@ -1,36 +1,44 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class PlayerInteraction : MonoBehaviour
 {
+    [Header("Interact")]
     public float interactDistance = 5f;
-    public GameObject repairPanel;              // 파이프 고치기 패널
-    public GameObject notPanel;                 // "망치 부족" 패널
-    public MonoBehaviour playerControllerScript; // 플레이어 움직임 제어 스크립트
 
-    // 파이프 오브젝트 4개
-    public GameObject pipeUp6;
-    public GameObject pipeStraightShort7;
-    public GameObject pipeUp6_1;
-    public GameObject pipeStraightShort7_1;
+    [Header("Panels")]
+    public GameObject repairPanel;       // repair UI panel
+    public GameObject notPanel;          // "not enough hammers" panel
 
-    public GameObject wallObject;               // 벽 오브젝트
+    [Header("Player Control")]
+    public MonoBehaviour playerControllerScript; // movement controller to toggle
 
-    public Image hammerIconUI;                  // 🔨 망치 UI 아이콘
-    public TMP_Text hammerCountText;            // 🔨 망치 개수 텍스트
+    [Header("Pipes (swap models)")]
+    public GameObject pipeUp6;                 // broken A
+    public GameObject pipeStraightShort7;      // broken B
+    public GameObject pipeUp6_1;               // fixed A
+    public GameObject pipeStraightShort7_1;    // fixed B
+
+    [Header("Wall")]
+    public GameObject wallObject;              // wall to disable after repair
+
+    [Header("Repair SFX")]
+    public AudioClip repairClip;               // e.g. hammer-6145.wav
+    [Range(0f, 1f)] public float repairVolume = 1f;
+    public bool playRepairAs2D = true;         // 2D recommended
 
     private bool panelOpenedOnce = false;
 
     void Update()
     {
-        // 마우스 클릭으로 상호작용
+        // open panel with mouse click on Interactable (only once)
         if (Input.GetMouseButtonDown(0) && !panelOpenedOnce &&
             ((repairPanel == null || !repairPanel.activeSelf) && (notPanel == null || !notPanel.activeSelf)))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, interactDistance))
+            if (Physics.Raycast(ray, out RaycastHit hit, interactDistance))
             {
                 if (hit.collider.CompareTag("Interactable"))
                 {
@@ -39,109 +47,120 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
-        // R키로 닫기
-        if (repairPanel != null && repairPanel.activeSelf && Input.GetKeyDown(KeyCode.R))
+        // close panels with R
+        if (repairPanel && repairPanel.activeSelf && Input.GetKeyDown(KeyCode.R))
         {
-            CloseRepairPanel();
+            CloseRepairPanel();  // apply repair
         }
-        else if (notPanel != null && notPanel.activeSelf && Input.GetKeyDown(KeyCode.R))
+        else if (notPanel && notPanel.activeSelf && Input.GetKeyDown(KeyCode.R))
         {
-            ClosePanelsOnly();
+            ClosePanelsOnly();   // just close
         }
 
-        // 패널이 열려 있으면 조작 잠금
-        if ((repairPanel != null && repairPanel.activeSelf) || (notPanel != null && notPanel.activeSelf))
+        // when any panel is open, lock player control and show cursor
+        if ((repairPanel && repairPanel.activeSelf) || (notPanel && notPanel.activeSelf))
+        {
+            SetCursorAndControl(true);
+        }
+        else
         {
             SetCursorAndControl(false);
         }
     }
 
-// 수리 패널 열기
-public void ShowRepairPanel()
-{
-    if (!panelOpenedOnce)
+    public void ShowRepairPanel()
     {
-        if (puthammer.hammerCount >= 3) // ✅ 3 -> 2
-        {
-            if (repairPanel != null)
-                repairPanel.SetActive(true);
-            if (notPanel != null)
-                notPanel.SetActive(false);
+        if (panelOpenedOnce) return;
 
-            SetCursorAndControl(true); // ✅ 패널 열면 조작 잠금
+        if (puthammer.hammerCount >= 3) // need 3 or more hammers
+        {
+            if (repairPanel) repairPanel.SetActive(true);
+            if (notPanel) notPanel.SetActive(false);
         }
         else
         {
-            if (notPanel != null)
-                notPanel.SetActive(true);
-            if (repairPanel != null)
-                repairPanel.SetActive(false);
-
-            SetCursorAndControl(true); // 부족 패널도 열면 잠금
+            if (notPanel) notPanel.SetActive(true);
+            if (repairPanel) repairPanel.SetActive(false);
         }
     }
-}
 
-
-    // 수리 후 닫기 + 망치 0으로 초기화
+    // applies the repair, plays sfx, resets hammer inventory/UI, and closes panels
     public void CloseRepairPanel()
     {
-        Debug.Log("수리 완료");
+        if (repairClip)
+            StartCoroutine(PlayClipForSeconds(repairClip, 2f, transform.position));
 
-        if (repairPanel != null)
-            repairPanel.SetActive(false);
-        if (notPanel != null)
-            notPanel.SetActive(false);
+        if (repairPanel) repairPanel.SetActive(false);
+        if (notPanel) notPanel.SetActive(false);
 
-        // 파이프 교체
-        if (pipeUp6 != null) pipeUp6.SetActive(false);
-        if (pipeStraightShort7 != null) pipeStraightShort7.SetActive(false);
-        if (pipeUp6_1 != null) pipeUp6_1.SetActive(true);
-        if (pipeStraightShort7_1 != null) pipeStraightShort7_1.SetActive(true);
+        // swap pipe models
+        if (pipeUp6) pipeUp6.SetActive(false);
+        if (pipeStraightShort7) pipeStraightShort7.SetActive(false);
+        if (pipeUp6_1) pipeUp6_1.SetActive(true);
+        if (pipeStraightShort7_1) pipeStraightShort7_1.SetActive(true);
 
-        // 벽 제거
-        if (wallObject != null) wallObject.SetActive(false);
+        // remove wall
+        if (wallObject) wallObject.SetActive(false);
 
-        // 망치 초기화
+        // reset hammer inventory and UI (use puthammer helpers)
         puthammer.hammerCount = 0;
-
-        // UI도 초기화
-        if (hammerIconUI != null) hammerIconUI.gameObject.SetActive(true);
-        if (hammerCountText != null)
-        {
-            hammerCountText.gameObject.SetActive(true);
-            hammerCountText.text = "0"; // ← 여기 수정됨!
-        }
+        puthammer.HideHammerUI();     // ensures icon & count are hidden when 0
 
         panelOpenedOnce = true;
-
-        SetCursorAndControl(false);
     }
 
-    // 닫기 (상태 변화 없음)
     public void ClosePanelsOnly()
     {
-        if (repairPanel != null) repairPanel.SetActive(false);
-        if (notPanel != null) notPanel.SetActive(false);
-        SetCursorAndControl(false);
+        if (repairPanel) repairPanel.SetActive(false);
+        if (notPanel) notPanel.SetActive(false);
     }
 
-    // 커서 및 플레이어 조작 제어
+    // cursor & player control toggle
     private void SetCursorAndControl(bool panelActive)
     {
         if (panelActive)
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            if (playerControllerScript != null)
-                playerControllerScript.enabled = false;
+            if (playerControllerScript) playerControllerScript.enabled = false;
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            if (playerControllerScript != null)
-                playerControllerScript.enabled = true;
+            if (playerControllerScript) playerControllerScript.enabled = true;
         }
+    }
+
+    // play a clip for N seconds from a detached AudioSource
+    private IEnumerator PlayClipForSeconds(AudioClip clip, float seconds, Vector3 worldPos)
+    {
+        GameObject go = new GameObject("RepairAudio");
+        var src = go.AddComponent<AudioSource>();
+        src.clip = clip;
+        src.volume = repairVolume;
+        src.loop = false;
+
+        if (playRepairAs2D)
+        {
+            src.spatialBlend = 0f; // 2D
+        }
+        else
+        {
+            src.spatialBlend = 1f; // 3D
+            go.transform.position = worldPos;
+            src.minDistance = 3f;
+            src.maxDistance = 20f;
+        }
+
+        src.Play();
+        float t = 0f;
+        while (t < seconds)
+        {
+            t += Time.unscaledDeltaTime; // plays even if timeScale == 0
+            yield return null;
+        }
+        if (src.isPlaying) src.Stop();
+        Destroy(go);
     }
 }
