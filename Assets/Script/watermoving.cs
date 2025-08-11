@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class watermoving : MonoBehaviour
 {
-    public float riseSpeed = 0.3f; // 초당 y scale 증가량
+    public float riseSpeed = 0.8f; // 초당 y scale 증가량
     private bool isRising = true;
 
     void Update()

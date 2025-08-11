@@ -15,6 +15,9 @@ public class ElectricPanelInteraction : MonoBehaviour
     public GameObject mainKnobOn;
     public GameObject mainKnobOff;
 
+    [Header("Main Knob 내려가는 동안 재생할 사운드")]
+    public AudioClip knobLoweringSound;
+
     private bool interactionLocked = false; // 클릭 후 재사용 금지
     private bool panelOpen = false;
     private bool panelJustOpened = false;   // 첫 클릭 후 즉시 knob 반응 방지용
@@ -98,6 +101,12 @@ public class ElectricPanelInteraction : MonoBehaviour
 
         SetCursorAndControl(true);
 
+        // 사운드 재생 (현재 오브젝트 위치)
+        if (knobLoweringSound != null)
+        {
+            AudioSource.PlayClipAtPoint(knobLoweringSound, transform.position);
+        }
+
         // 1초 후 knob 상태 전환
         Invoke(nameof(SwitchKnobState), 1f);
     }
@@ -112,6 +121,7 @@ public class ElectricPanelInteraction : MonoBehaviour
 
     private void SetCursorAndControl(bool enablePlayerControl)
     {
+        // 커서만 숨김
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -119,4 +129,3 @@ public class ElectricPanelInteraction : MonoBehaviour
             playerControllerScript.enabled = enablePlayerControl;
     }
 }
-

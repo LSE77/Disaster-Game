@@ -9,6 +9,7 @@ TagManager:
   - Interactable
   - electric
   - Flashlight
+  - effect
   layers:
   - Default
   - TransparentFX
