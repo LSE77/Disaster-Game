@@ -7932,7 +7932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67c4ebb092099864b91e5057c8f71152, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactDistance: 7
+  interactDistance: 15
   electricPanelUI: {fileID: 168053890}
   playerControllerScript: {fileID: 661264177}
   mainKnobOn: {fileID: 1534733731}
@@ -26482,9 +26482,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainKnobOnObject: {fileID: 1534733731}
-  effectsRoot: {fileID: 0}
   effectTag: effect
-  electricEffects: []
+  invisibleWallTag: invisible
   electricClip: {fileID: 8300000, guid: f598bb459f1a2634b8c23a4b7942b89a, type: 3}
   player: {fileID: 661264176}
   maxDistance: 30
@@ -52848,6 +52847,68 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478984170}
   m_Mesh: {fileID: 4300016, guid: c9834c3efa5310648bc37a725e017176, type: 3}
+--- !u!1 &1480874612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1480874616}
+  - component: {fileID: 1480874615}
+  - component: {fileID: 1480874613}
+  m_Layer: 3
+  m_Name: wall
+  m_TagString: invisible
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1480874613
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480874612}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!33 &1480874615
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480874612}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1480874616
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480874612}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -143, y: 10.06, z: -87.45}
+  m_LocalScale: {x: 29.015245, y: 20, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1481097755
 GameObject:
   m_ObjectHideFlags: 0
@@ -76906,6 +76967,7 @@ SceneRoots:
   - {fileID: 854818996}
   - {fileID: 1616834408}
   - {fileID: 1407120344}
+  - {fileID: 1480874616}
   - {fileID: 621534033}
   - {fileID: 1363196119}
   - {fileID: 1265792276}
